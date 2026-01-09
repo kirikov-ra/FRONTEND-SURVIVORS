@@ -1,54 +1,33 @@
 import Phaser from "phaser";
+import type { MovementKeys } from "../types/Input";
 
-type KeyMap = {
-    W: Phaser.Input.Keyboard.Key;
-    A: Phaser.Input.Keyboard.Key;
-    S: Phaser.Input.Keyboard.Key;
-    D: Phaser.Input.Keyboard.Key;
-};
+type PlayerAnim = "player-idle" | "player-walk" | "player-hit";
 
-export class Player extends Phaser.Physics.Arcade.Sprite { 
-  public hp: number;
-  public maxHp: number;
-  private speed = 200;
+export class Player extends Phaser.Physics.Arcade.Sprite {
+    public hp: number;
+    public maxHp: number;
 
-  private keys: {
-    W: Phaser.Input.Keyboard.Key;
-    A: Phaser.Input.Keyboard.Key;
-    S: Phaser.Input.Keyboard.Key;
-    D: Phaser.Input.Keyboard.Key;
-  };
-  
+    private speed = 200;
+    private isHit = false;
+    private hitCooldownMs = 300;
+    private hitTimer?: Phaser.Time.TimerEvent;
+
+
+
+  private keys: MovementKeys;
   private onHpChange?: (hp: number) => void;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, "player");
-    scene.add.existing(this);
-    scene.physics.add.existing(this);
-
-    const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(18, 24);
-    body.setCollideWorldBounds(true);
-    body.setImmovable(false); // для игрока и врагов
-    body.setAllowGravity(false);
-    
-    this.hp = 100;
-    this.maxHp = 100;
-
-    this.keys = scene.input.keyboard!.addKeys("W,A,S,D") as KeyMap;
+  private get bodyArcade(): Phaser.Physics.Arcade.Body {
+    return this.body as Phaser.Physics.Arcade.Body;
   }
 
-   public setHpChangeCallback(cb: (hp: number) => void) {
-    this.onHpChange = cb;
+  private playAnimation(key: PlayerAnim) {
+    if (this.anims.currentAnim?.key === key) return;
+    this.play(key);
   }
 
-  takeDamage(amount: number) {
-    this.hp = Math.max(0, this.hp - amount);
-    if (this.onHpChange) this.onHpChange(this.hp);
-  }
-
-  update() {
-    const body = this.body as Phaser.Physics.Arcade.Body;
+  private updateMovement() {
+    const body = this.bodyArcade;
     body.setVelocity(0);
 
     if (this.keys.W.isDown) body.setVelocityY(-this.speed);
@@ -59,5 +38,73 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.velocity.normalize().scale(this.speed);
   }
 
-  
+  private updateAnimation() {
+    if (this.isHit) return;
+
+    const body = this.bodyArcade;
+
+    if (body.velocity.lengthSq() > 0) {
+      this.flipX = body.velocity.x < 0;
+      this.playAnimation("player-walk");
+    } else {
+      this.playAnimation("player-idle");
+    }
+  }
+
+  constructor(scene: Phaser.Scene, x: number, y: number) {
+    super(scene, x, y, "player_asset_sheet", 0);
+
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+
+    const body = this.bodyArcade;
+    body.setSize(19, 28);
+    body.setOffset(2, 4);
+    body.setCollideWorldBounds(true);
+    body.setImmovable(false);
+    body.setAllowGravity(false);
+
+    this.setDisplaySize(25, 72);
+
+    this.hp = 100;
+    this.maxHp = 100;
+
+    this.keys = scene.input.keyboard!.addKeys({
+      W: Phaser.Input.Keyboard.KeyCodes.W,
+      A: Phaser.Input.Keyboard.KeyCodes.A,
+      S: Phaser.Input.Keyboard.KeyCodes.S,
+      D: Phaser.Input.Keyboard.KeyCodes.D,
+    }) as MovementKeys;
+  }
+
+  public setHpChangeCallback(cb: (hp: number) => void): void {
+    this.onHpChange = cb;
+  }
+
+  public takeDamage(amount: number): void {
+  if (this.isHit) return;
+
+  this.hp = Math.max(0, this.hp - amount);
+  this.onHpChange?.(this.hp);
+
+  this.isHit = true;
+  this.playAnimation("player-hit");
+
+  this.hitTimer?.remove(false);
+
+  this.hitTimer = this.scene.time.delayedCall(
+    this.hitCooldownMs,
+    () => {
+      this.isHit = false;
+    },
+    undefined,
+    this
+  );
+}
+
+  update(): void {
+    console.log(this.isHit)
+    this.updateMovement();
+    this.updateAnimation();
+  }
 }

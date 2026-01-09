@@ -6,10 +6,24 @@ export class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("player", "/assets/player.png");
-        this.load.image("biom", "assets/biom.png");
-        this.load.image("water", "assets/water.png");
-        this.load.image("enemy", "assets/bag.png");
+        this.load.spritesheet(
+            "player_asset_sheet",
+            "assets/player_asset_sheet.png",
+            {
+                frameWidth: 22,
+                frameHeight: 64,
+            }
+        );
+        this.load.spritesheet(
+            "enemy_sprite_sheet", 
+            "assets/bug.png", 
+            {
+                frameWidth: 22,
+                frameHeight: 44,
+            });
+        this.load.image("floor", "assets/floor.png");
+        this.load.image("wall_front", "assets/wall_front.png");
+        this.load.image("wall_side", "assets/wall_side.png");
     }   
 
 

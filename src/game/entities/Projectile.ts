@@ -1,13 +1,11 @@
 import Phaser from "phaser";
-import { Enemy } from "./Enemy";
 
-export class Projectile extends Phaser.Physics.Arcade.Sprite  {
-  private speed = 300;
-  private target: Enemy;
+export class Projectile extends Phaser.Physics.Arcade.Sprite {
+  speed = 300;
+  damage = 50;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, target: Enemy) {
+  constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, "html");
-    this.target = target;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -15,30 +13,19 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite  {
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setAllowGravity(false);
 
-    this.setDisplaySize(16, 16);        // визуальный размер
-    body.setSize(16, 16);               // хитбокс
-
-    scene.physics.moveToObject(this, target, this.speed);
+    // ФИКСИРОВАННЫЙ ХИТБОКС
+    const size = 14;
+    this.setDisplaySize(size, size);
+    body.setSize(size, size);
+    body.setOffset(
+      (this.width - size) / 2,
+      (this.height - size) / 2
+    );
   }
 
-  preUpdate(time: number, delta: number) {
-    super.preUpdate(time, delta);
+  fire(from: Phaser.Math.Vector2, to: Phaser.Math.Vector2) {
+    this.setPosition(from.x, from.y);
 
-    if (!this.target.active) {
-      this.destroy();
-      return;
-    }
-
-    const dist = Phaser.Math.Distance.Between(
-      this.x,
-      this.y,
-      this.target.x,
-      this.target.y
-    );
-
-    if (dist < 12) {
-      this.target.takeDamage(50);
-      this.destroy();
-    }
+    this.scene.physics.moveTo(this, to.x, to.y, this.speed);
   }
 }

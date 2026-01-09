@@ -4,10 +4,9 @@ export const HUD = () => {
   const [hp, setHp] = useState(100);
 
   useEffect(() => {
-    // вешаем функцию глобально
-    (window as any).setPlayerHp = setHp;
+    window.setPlayerHp = setHp;
     return () => {
-      (window as any).setPlayerHp = undefined;
+      window.setPlayerHp = undefined;
     };
   }, []);
 

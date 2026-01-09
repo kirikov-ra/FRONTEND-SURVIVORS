@@ -1,39 +1,53 @@
 import Phaser from "phaser";
 import { Player } from "./Player";
 
+type EnemyAnim = "enemy-walk";
+
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
-  private speed = 150;
-  private target: Player;
-  private hp = 100;
-  private lastDamageTime = 0;
-    private damageCooldown = 1000;
+    private speed = 150;
+    private target: Player;
+    private hp = 100;
+    private lastDamageTime = 0;
+    private damageCooldown = 500;
+    private get bodyArcade(): Phaser.Physics.Arcade.Body {
+        return this.body as Phaser.Physics.Arcade.Body;
+    }
 
   constructor(scene: Phaser.Scene, x: number, y: number, target: Player) {
-    super(scene, x, y, "enemy");
+    super(scene, x, y, "enemy_sprite_sheet");
+
     this.target = target;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    const body = this.body as Phaser.Physics.Arcade.Body;
+    const body = this.bodyArcade;
     body.setAllowGravity(false);
-    body.setSize(18, 24);
+    body.setSize(18, 20);
+    body.setOffset(0, 2);
   }
 
-  update() {
+  private playAnimation(key: EnemyAnim): void {
+    if (this.anims.currentAnim?.key === key) return;
+    this.play(key);
+  }
+
+  update(): void {
     this.scene.physics.moveToObject(this, this.target, this.speed);
+    this.playAnimation("enemy-walk");
   }
 
-  takeDamage(amount: number) {
+  public takeDamage(amount: number): void {
     this.hp -= amount;
     if (this.hp <= 0) {
       this.destroy();
     }
   }
 
-    tryDealDamage(player: Player, time: number) {
-        if (time < this.lastDamageTime + this.damageCooldown) return;
-        this.lastDamageTime = time;
-        player.takeDamage(1);
-    }
+  public tryDealDamage(player: Player, time: number): void {
+    if (time < this.lastDamageTime + this.damageCooldown) return;
+
+    this.lastDamageTime = time;
+    player.takeDamage(1);
+  }
 }

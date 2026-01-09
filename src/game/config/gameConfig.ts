@@ -11,9 +11,9 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   physics: {
     default: "arcade",
     arcade: {
-      debug: false,
+      debug: true,
       timeScale: 1,
-      fps: 120, // повысить, если много объектов
+      fps: 120,
     },
   },
   scene: [BootScene, MainScene],

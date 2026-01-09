@@ -9,7 +9,7 @@ export class ProjectileSystem {
   private enemies: Phaser.Physics.Arcade.Group;
   private projectiles: Phaser.Physics.Arcade.Group;
 
-  private radius = 400;
+  private radius = 200;
   private cooldown = 600;
   private lastShot = 0;
 
@@ -24,17 +24,17 @@ export class ProjectileSystem {
 
     this.projectiles = scene.physics.add.group({
       classType: Projectile,
-      runChildUpdate: true,
+      runChildUpdate: false,
     });
 
-    // 🔥 КОЛЛАЙДЕР СНАРЯД ↔ ВРАГ
-    // scene.physics.add.overlap(
-    //   this.projectiles,
-    //   this.enemies,
-    //   this.handleHit as any,
-    //   undefined,
-    //   this
-    // );
+    // ГЛАВНОЕ МЕСТО
+    scene.physics.add.overlap(
+      this.projectiles,
+      this.enemies,
+      this.onHit as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this
+    );
   }
 
   update(time: number) {
@@ -43,34 +43,57 @@ export class ProjectileSystem {
     const target = this.findClosestEnemy();
     if (!target) return;
 
-    new Projectile(this.scene, this.player.x, this.player.y, target);
+    const projectile = this.projectiles.get(
+      this.player.x,
+      this.player.y
+    ) as Projectile;
+
+    if (!projectile) return;
+
+    projectile.setActive(true);
+    projectile.setVisible(true);
+
+    projectile.fire(
+      new Phaser.Math.Vector2(this.player.x, this.player.y),
+      new Phaser.Math.Vector2(target.x, target.y)
+    );
+
     this.lastShot = time;
+  }
+
+  private onHit(
+    projectileGO: Phaser.GameObjects.GameObject,
+    enemyGO: Phaser.GameObjects.GameObject
+  ) {
+    const projectile = projectileGO as Projectile;
+    const enemy = enemyGO as Enemy;
+
+    enemy.takeDamage(projectile.damage);
+    projectile.destroy();
   }
 
   private findClosestEnemy(): Enemy | null {
     let closest: Enemy | null = null;
     let minDist = this.radius;
 
-    this.enemies.children.iterate((child) => {
-        const enemy = child as Enemy;
-        if (!enemy.active) return true;
+    this.enemies.children.each((child) => {
+      const enemy = child as Enemy;
+      if (!enemy.active) return true;
 
-        const dist = Phaser.Math.Distance.Between(
-            this.player.x,
-            this.player.y,
-            enemy.x,
-            enemy.y
-        );
+      const dist = Phaser.Math.Distance.Between(
+        this.player.x,
+        this.player.y,
+        enemy.x,
+        enemy.y
+      );
 
-        if (dist < minDist) {
-            minDist = dist;
-            closest = enemy;
-        }
-
-        return true;
+      if (dist < minDist) {
+        minDist = dist;
+        closest = enemy;
+      }
+      return true;
     });
 
     return closest;
   }
 }
-
