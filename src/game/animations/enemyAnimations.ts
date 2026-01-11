@@ -6,7 +6,7 @@ export function createEnemyAnimations(anims: Phaser.Animations.AnimationManager)
   anims.create({
     key: "enemy-walk",
     frames: anims.generateFrameNumbers("enemy_sprite_sheet", { start: 0, end: 3 }),
-    frameRate: 6,
+    frameRate: 10,
     repeat: -1,
   });
 }

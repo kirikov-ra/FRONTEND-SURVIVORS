@@ -4,17 +4,23 @@ import { MainScene } from "../scenes/MainScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: window.innerWidth ,
-  height: window.innerHeight,
-  backgroundColor: "#1e1e1e",
   parent: "game-root",
+  backgroundColor: "#1e1e1e",
+
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+
   physics: {
     default: "arcade",
     arcade: {
-      debug: true,
+      debug: false,
       timeScale: 1,
       fps: 120,
     },
   },
+
   scene: [BootScene, MainScene],
 };
+

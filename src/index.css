@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap'); */
 
 
 /* ====== 🔄 СБРОС БАЗОВЫХ СТИЛЕЙ ====== */
@@ -32,6 +32,17 @@ body {
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   /* overflow-x: hidden; */
+}
+
+html,
+body,
+#root,
+#game-root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 body {

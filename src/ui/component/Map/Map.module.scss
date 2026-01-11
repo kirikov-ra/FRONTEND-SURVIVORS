@@ -1,0 +1,105 @@
+.container {
+    width: 150px;
+    height: 150px;
+    background: #313d4b;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(
+                /* верх-левый */
+                0 6px,
+                2px 6px,
+                2px 2px,
+                6px 2px,
+                6px 0,
+    
+                /* верх-правый */
+                144px 0,
+                144px 2px,
+                148px 2px,
+                148px 6px,
+                150px 6px,
+    
+                /* низ-правый */
+                150px 144px,
+                148px 144px,
+                148px 148px,
+                144px 148px,
+                144px 150px,
+    
+                /* низ-левый */
+                6px 150px,
+                6px 148px,
+                2px 148px,
+                2px 144px,
+                0 144px);
+
+
+    .mapWrapper {
+        width: 146px;
+        height: 146px;
+        background: #171d29;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        clip-path: polygon(
+                    /* верх-левый */
+                    0 6px,
+                    2px 6px,
+                    2px 2px,
+                    6px 2px,
+                    6px 0,
+        
+                    /* верх-правый */
+                    140px 0,
+                    140px 2px,
+                    144px 2px,
+                    144px 6px,
+                    146px 6px,
+        
+                    /* низ-правый */
+                    146px 140px,
+                    144px 140px,
+                    144px 144px,
+                    140px 144px,
+                    140px 146px,
+        
+                    /* низ-левый */
+                    6px 146px,
+                    6px 144px,
+                    2px 144px,
+                    2px 140px,
+                    0 140px);
+                
+        .map {
+            width: calc(100% - 14px);
+            height: calc(100% - 14px);
+            box-shadow: 2px 2px 0 0px #090c13 inset;
+            position: relative;
+        
+            &::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: calc(100% - 2px);
+                height: calc(100% - 2px);
+                box-shadow: -2px -2px 0 0px #313d4b inset;
+            }
+        }
+    }
+
+    .playerDot {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background-color: #00ff00;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%); // точка по центру координаты
+    }
+}
+
+

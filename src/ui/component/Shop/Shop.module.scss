@@ -1,0 +1,90 @@
+.container {
+    width: 100px;
+    height: 60px;
+    padding: 2px;
+    background: #313d4b;
+    clip-path: polygon(
+                /* верх-левый */
+                0 6px,
+                2px 6px,
+                2px 2px,
+                6px 2px,
+                6px 0,
+    
+                /* верх-правый */
+                94px 0,
+                94px 2px,
+                98px 2px,
+                98px 6px,
+                100px 6px,
+    
+                /* низ-правый */
+                100px 54px,
+                98px 54px,
+                98px 58px,
+                94px 58px,
+                94px 60px,
+    
+                /* низ-левый */
+                6px 60px,
+                6px 58px,
+                2px 58px,
+                2px 54px,
+                0 54px);
+
+    .shop {
+        width: 96px;
+        height: 56px;
+        background: #171d29;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        clip-path: polygon(
+                    /* верх-левый */
+                    0 6px,
+                    2px 6px,
+                    2px 2px,
+                    6px 2px,
+                    6px 0,
+        
+                    /* верх-правый */
+                    90px 0,
+                    90px 2px,
+                    94px 2px,
+                    94px 6px,
+                    96px 6px,
+        
+                    /* низ-правый */
+                    96px 50px,
+                    94px 50px,
+                    94px 54px,
+                    90px 54px,
+                    90px 56px,
+        
+                    /* низ-левый */
+                    6px 56px,
+                    6px 54px,
+                    2px 54px,
+                    2px 50px,
+                    0 50px);
+        button {
+            background: #d49f41;
+            box-shadow: 2px 2px 0 2px #f5d870 inset;
+            position: relative;
+            font-size: 12px;
+            padding: 6px 10px;
+            z-index: 10;
+        
+            &::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: calc(100% - 4px);
+                height: calc(100% - 4px);
+                box-shadow: -2px -2px 0 2px #b07c29 inset;
+            }
+        }
+    }
+}

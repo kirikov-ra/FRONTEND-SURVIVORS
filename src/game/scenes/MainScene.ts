@@ -69,27 +69,33 @@ export class MainScene extends Phaser.Scene {
 
     const bottomWall = this.add.tileSprite(
       this.MAP_WIDTH / 2,
-      this.MAP_HEIGHT - this.WALL_THICKNESS / 2,
+      this.MAP_HEIGHT - 7,
       this.MAP_WIDTH,
-      this.WALL_THICKNESS,
-      "wall_front"
+      14,
+      "wall_bottom"
     );
+    bottomWall.setDepth(4);
+    this.physics.add.existing(bottomWall, true);
+    const bottomBody = bottomWall.body as Phaser.Physics.Arcade.StaticBody;
+    bottomBody.setSize(this.MAP_WIDTH, -14);
 
     const leftWall = this.add.tileSprite(
       0,
       this.MAP_HEIGHT / 2,
-      14,
+      21,
       this.MAP_HEIGHT,
       "wall_side"
     );
+    leftWall.setDepth(3);
 
     const rightWall = this.add.tileSprite(
       this.MAP_WIDTH,
       this.MAP_HEIGHT / 2,
-      14,
+      21,
       this.MAP_HEIGHT,
       "wall_side"
     );
+    rightWall.setDepth(3);
 
     this.physics.add.existing(bottomWall, true);
     this.physics.add.existing(leftWall, true);
@@ -98,6 +104,11 @@ export class MainScene extends Phaser.Scene {
     //  HP callback
     this.player.setHpChangeCallback((hp: number): void => {
       window.setPlayerHp?.(hp);
+    });
+
+    //  Speed callback
+    this.player.setSpeedChangeCallback((speed: number): void => {
+      window.setPlayerSpeed?.(speed);
     });
 
     // ВРАГИ
@@ -148,7 +159,6 @@ export class MainScene extends Phaser.Scene {
 
   private spawnEnemy(): void {
     if (this.enemies.countActive(true) >= 40) return;
-
     const side = Phaser.Math.Between(0, 3);
     const w = this.scale.width;
     const h = this.scale.height;

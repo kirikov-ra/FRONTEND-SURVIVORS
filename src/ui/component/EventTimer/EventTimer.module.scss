@@ -1,0 +1,54 @@
+.container {
+    width: 200px;
+    height: 30px;
+    background: #313d4b;
+    margin: 0 auto;
+    margin-top: 4px;
+    padding: 2px;
+    clip-path: polygon(
+            /* верх-левый */
+            0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+
+            /* верх-правый */
+            194px 0, 194px 2px, 198px 2px, 198px 6px, 200px 6px,
+
+            /* низ-правый */
+            200px 24px, 198px 24px, 198px 28px, 194px 28px, 194px 30px,
+
+            /* низ-левый */
+            6px 30px, 6px 28px, 2px 28px, 2px 24px, 0 24px);
+
+    .timer {
+        width: 196px;
+        height: 26px;
+        position: relative;
+        background: #171d29;
+        clip-path: polygon(
+                /* верх-левый */
+                0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+
+                /* верх-правый */
+                190px 0, 190px 2px, 194px 2px, 194px 6px, 196px 6px,
+
+                /* низ-правый */
+                196px 20px, 194px 20px, 194px 24px, 190px 24px, 190px 26px,
+
+                /* низ-левый */
+                6px 26px, 6px 24px, 2px 24px, 2px 20px, 0 20px);
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+
+    p {
+        font-size: 10px;
+        flood-color: white;
+        white-space: nowrap;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

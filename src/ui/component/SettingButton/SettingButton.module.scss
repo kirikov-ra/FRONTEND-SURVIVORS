@@ -1,0 +1,41 @@
+.container {
+    width: 30px;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+    background: #313d4b;
+    padding: 2px;
+    clip-path: polygon(
+            /* верх-левый */
+            0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+
+            /* верх-правый */
+            24px 0, 24px 2px, 28px 2px, 28px 6px, 30px 6px,
+
+            /* низ-правый */
+            30px 24px, 28px 24px, 28px 28px, 24px 28px, 24px 30px,
+
+            /* низ-левый */
+            6px 30px, 6px 28px, 2px 28px, 2px 24px, 0 24px
+            );
+
+    .button {
+        width: 26px;
+        height: 26px;
+        position: relative;
+        background: #171d29;
+        clip-path: polygon(
+                /* верх-левый */
+                0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+
+                /* верх-правый */
+                19px 0, 19px 2px, 24px 2px, 24px 6px, 26px 6px,
+
+                /* низ-правый */
+                26px 20px, 24px 20px, 24px 24px, 19px 24px, 19px 26px,
+
+                /* низ-левый */
+                6px 26px, 6px 24px, 2px 24px, 2px 20px, 0 20px
+                );
+    }
+}

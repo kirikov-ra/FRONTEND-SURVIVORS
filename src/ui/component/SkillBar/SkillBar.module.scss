@@ -1,0 +1,43 @@
+.container {
+    width: 200px;
+    height: 110px;
+    background: #313d4b;
+    position: relative;
+    padding: 2px;
+    clip-path: polygon(
+                /* верх-левый */
+                0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+    
+                /* верх-правый */
+                194px 0, 194px 2px, 198px 2px, 198px 6px, 200px 6px,
+    
+                /* низ-правый */
+                200px 104px, 198px 104px, 198px 108px, 194px 108px, 194px 110px,
+    
+                /* низ-левый */
+                6px 110px, 6px 108px, 2px 108px, 2px 104px, 0 104px);
+
+    .skills {
+        width: 196px;
+        height: 106px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        justify-items: center;
+        align-items: center;
+        padding: 6px;
+        background: #171d29;
+        clip-path: polygon(
+                    /* верх-левый */
+                    0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,
+        
+                    /* верх-правый */
+                    190px 0, 190px 2px, 194px 2px, 194px 6px, 196px 6px,
+        
+                    /* низ-правый */
+                    196px 100px, 194px 100px, 194px 104px, 190px 104px, 190px 106px,
+        
+                    /* низ-левый */
+                    6px 106px, 6px 104px, 2px 104px, 2px 100px, 0 100px);
+    }
+}

@@ -1,0 +1,32 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    // background: url("assets/floor.png"); 
+    .top {
+        .buttons {
+            position: fixed;
+            top: 4px;
+            left: 4px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+    }
+}
+
+.bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.info_container {
+    display: flex;
+    align-items: end;
+}
