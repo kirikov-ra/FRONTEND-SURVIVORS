@@ -1,22 +1,46 @@
 import Phaser from "phaser";
-import type { MovementKeys } from "../types/Input";
+import type { MovementKeys } from "../../types/Input";
 
-type PlayerAnim = "player-idle" | "player-walk" | "player-hit";
+type PlayerAnim = "player-idle" | "player-walk" | "player-hit" | "player-roll";
+
+export type RollState = {
+  current: number;
+  max: number;
+  progress: number; // 0..1
+};
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     public hp: number;
     public maxHp: number;
-
+    public xp = 0;
     private speed = 200;
     private isHit = false;
     private hitCooldownMs = 300;
     private hitTimer?: Phaser.Time.TimerEvent;
 
+    // roll config
+    private readonly ROLL_SPEED = 350;
+    private readonly ROLL_DURATION = 300;
+    private readonly ROLL_COOLDOWN = 400;
+    private readonly MAX_ROLL_CHARGES = 3;
+    private readonly ROLL_RECHARGE_TIME = 30000;
 
+    // state
+    private isRolling = false;
+    private rollDir = new Phaser.Math.Vector2(1, 0);
 
-    private keys: MovementKeys;
+    private rollCharges = this.MAX_ROLL_CHARGES;
+    private lastRollTime = 0;
+    private lastChargeTime = 0; 
+
+    private onRollStateChange?: (state: RollState) => void;
+    private onXpChange?: (xp: number) => void;
     private onHpChange?: (hp: number) => void;
     private onSpeedChange?: (speed: number) => void;
+
+    private spaceKey: Phaser.Input.Keyboard.Key;
+
+    private keys: MovementKeys;
     private get bodyArcade(): Phaser.Physics.Arcade.Body {
       return this.body as Phaser.Physics.Arcade.Body;
     }
@@ -27,15 +51,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     private updateMovement() {
-      const body = this.bodyArcade;
-      body.setVelocity(0);
+        const body = this.bodyArcade;
+        body.setVelocity(0);
 
-      if (this.keys.W.isDown) body.setVelocityY(-this.speed);
-      if (this.keys.S.isDown) body.setVelocityY(this.speed);
-      if (this.keys.A.isDown) body.setVelocityX(-this.speed);
-      if (this.keys.D.isDown) body.setVelocityX(this.speed);
+        if (this.keys.W.isDown) body.setVelocityY(-this.speed);
+        if (this.keys.S.isDown) body.setVelocityY(this.speed);
+        if (this.keys.A.isDown) body.setVelocityX(-this.speed);
+        if (this.keys.D.isDown) body.setVelocityX(this.speed);
 
-      body.velocity.normalize().scale(this.speed);
+        body.velocity.normalize().scale(this.speed);
+
+        if (body.velocity.lengthSq() > 0) {
+            this.rollDir.copy(body.velocity).normalize();
+        }
     }
 
     private updateAnimation() {
@@ -51,30 +79,87 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
+    private tryRoll(time: number): void {
+        if (this.isRolling) return;
+        if (this.rollCharges <= 0) return;
+        if (time < this.lastRollTime + this.ROLL_COOLDOWN) return;
+        if (this.rollDir.lengthSq() === 0) return;
+
+        this.isRolling = true;
+        this.rollCharges--;
+        this.lastRollTime = time;
+
+        const body = this.bodyArcade;
+
+        body.setVelocity(
+            this.rollDir.x * this.ROLL_SPEED,
+            this.rollDir.y * this.ROLL_SPEED
+        );
+
+        this.play("player-roll", true);
+
+        this.scene.time.delayedCall(this.ROLL_DURATION, () => {
+            this.isRolling = false;
+            body.setVelocity(0);
+        });
+    }
+
+    private updateRollRecharge(time: number): void {
+        if (this.rollCharges >= this.MAX_ROLL_CHARGES) return;
+
+        if (this.lastChargeTime === 0) {
+            this.lastChargeTime = time;
+        }
+
+        const progress =
+            (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME;
+
+        if (progress >= 1) {
+            this.rollCharges++;
+            this.lastChargeTime = 0;
+        }
+    }
+
+    private getRollProgress(time: number): number {
+        if (this.rollCharges >= this.MAX_ROLL_CHARGES) return 0;
+        if (this.lastChargeTime === 0) return 0;
+
+        return Phaser.Math.Clamp(
+            (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME,
+            0,
+            1
+        );
+    }
+
+
     constructor(scene: Phaser.Scene, x: number, y: number) {
-      super(scene, x, y, "player_asset_sheet", 0);
+        super(scene, x, y, "player_asset_sheet", 0);
 
-      scene.add.existing(this);
-      scene.physics.add.existing(this);
+        scene.add.existing(this);
+        scene.physics.add.existing(this);
 
-      const body = this.bodyArcade;
-      body.setSize(19, 28);
-      body.setOffset(2, 4);
-      body.setCollideWorldBounds(true);
-      body.setImmovable(false);
-      body.setAllowGravity(false);
+        const body = this.bodyArcade;
+        body.setSize(19, 28);
+        body.setOffset(2, 4);
+        body.setCollideWorldBounds(true);
+        body.setImmovable(false);
+        body.setAllowGravity(false);
 
-      this.setDisplaySize(25, 72);
+        this.setDisplaySize(25, 72);
 
-      this.hp = 100;
-      this.maxHp = 100;
+        this.hp = 100;
+        this.maxHp = 100;
 
-      this.keys = scene.input.keyboard!.addKeys({
-        W: Phaser.Input.Keyboard.KeyCodes.W,
-        A: Phaser.Input.Keyboard.KeyCodes.A,
-        S: Phaser.Input.Keyboard.KeyCodes.S,
-        D: Phaser.Input.Keyboard.KeyCodes.D,
-      }) as MovementKeys;
+        this.keys = scene.input.keyboard!.addKeys({
+            W: Phaser.Input.Keyboard.KeyCodes.W,
+            A: Phaser.Input.Keyboard.KeyCodes.A,
+            S: Phaser.Input.Keyboard.KeyCodes.S,
+            D: Phaser.Input.Keyboard.KeyCodes.D,
+        }) as MovementKeys;
+
+        this.spaceKey = scene.input.keyboard!.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SPACE
+        );
     }
 
     public setHpChangeCallback(cb: (hp: number) => void): void {
@@ -83,6 +168,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // =============================================================== dorabotac
     public setSpeedChangeCallback(cb: (speed: number) => void): void {
         this.onSpeedChange = cb;
+    }
+
+    public setRollStateChangeCallback(cb: (state: RollState) => void): void {
+        this.onRollStateChange = cb;
+    }
+
+    public setXpChangeCallback(cb: (xp: number) => void): void {
+        this.onXpChange = cb;
+    }
+
+    public addExperience(amount: number): void {
+        this.xp += amount;
+        this.onXpChange?.(this.xp);
     }
 
     // public setSpeed(speed: number): void {
@@ -96,29 +194,45 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // }
 
 
-  public takeDamage(amount: number): void {
-  if (this.isHit) return;
+    public takeDamage(amount: number): void {
+        if (this.isHit) return;
 
-  this.hp = Math.max(0, this.hp - amount);
-  this.onHpChange?.(this.hp);
+        this.hp = Math.max(0, this.hp - amount);
+        this.onHpChange?.(this.hp);
 
-  this.isHit = true;
-  this.playAnimation("player-hit");
+        this.isHit = true;
+        this.playAnimation("player-hit");
 
-  this.hitTimer?.remove(false);
+        this.hitTimer?.remove(false);
 
-  this.hitTimer = this.scene.time.delayedCall(
-    this.hitCooldownMs,
-    () => {
-      this.isHit = false;
-    },
-    undefined,
-    this
-  );
-}
+        this.hitTimer = this.scene.time.delayedCall(
+            this.hitCooldownMs,
+            () => {
+            this.isHit = false;
+            },
+            undefined,
+            this
+        );
+    }
 
-  update(): void {
-    this.updateMovement();
-    this.updateAnimation();
-  }
+    update(time: number): void {
+        if (!this.isRolling) {
+            this.updateMovement();
+            this.updateAnimation();
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.tryRoll(time);
+        }
+
+        this.onRollStateChange?.({
+            current: this.rollCharges,
+            max: this.MAX_ROLL_CHARGES,
+            progress: this.getRollProgress(time),
+        });
+
+        this.updateRollRecharge(time);
+
+    }
+
 }

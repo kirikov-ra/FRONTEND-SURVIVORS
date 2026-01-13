@@ -5,6 +5,7 @@ import { InfoBar } from "../InfoBar/InfoBar";
 import { ItemsBar } from "../ItemsBar/ItemsBar";
 import { LibraryButton } from "../LibraryButton/LibraryButton";
 import { Map } from "../Map/Map"
+import { RollHUD } from "../RollHUD/RollHUD";
 import { SettingButton } from "../SettingButton/SettingButton";
 import { Shop } from "../Shop/Shop";
 import { SkillBar } from "../SkillBar/SkillBar";
@@ -16,9 +17,10 @@ export const HUD = () => {
         <div className={styles.container}>
             <div className={styles.top}>
                 <div className={styles.buttons}>
-                    <FullscreenButton />
-                    <SettingButton />
+                    <RollHUD />
                     <LibraryButton />
+                    <SettingButton />
+                    <FullscreenButton />
                 </div>
                 <EventTimer seconds={300} />
             </div>

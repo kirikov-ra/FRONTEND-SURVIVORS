@@ -23,4 +23,15 @@ export function createPlayerAnimations(anims: Phaser.Animations.AnimationManager
     frameRate: 12,
     repeat: 0,
   });
+
+  anims.create({
+    key: "player-roll",
+    frames: anims.generateFrameNumbers("player-roll", {
+      // start: 12,
+      // end: 17, // 6 кадров
+      start: 0, end: 5
+    }),
+    frameRate: 20,
+    repeat: 0,
+  });
 }

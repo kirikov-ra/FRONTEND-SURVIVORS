@@ -12,7 +12,7 @@
         .buttons {
             position: fixed;
             top: 4px;
-            left: 4px;
+            right: 4px;
             z-index: 1000;
             display: flex;
             gap: 10px;
@@ -24,6 +24,23 @@
     display: flex;
     justify-content: space-between;
     align-items: end;
+    position: relative;
+
+    > div {
+        z-index: 2;
+    }
+
+    &::after {
+        content: "";
+        height: 50%;
+        width: 300px;
+        background: #171d29;
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        z-index: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 .info_container {

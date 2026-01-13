@@ -15,6 +15,11 @@ export class BootScene extends Phaser.Scene {
             }
         );
         this.load.spritesheet(
+            "player-roll",
+            "assets/player_roll.png",
+            { frameWidth: 32, frameHeight: 64 }
+        );
+        this.load.spritesheet(
             "enemy_sprite_sheet", 
             "assets/bug.png", 
             {

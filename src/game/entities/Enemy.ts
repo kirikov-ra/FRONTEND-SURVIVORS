@@ -40,8 +40,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   public takeDamage(amount: number): void {
     this.hp -= amount;
     if (this.hp <= 0) {
-      this.destroy();
+      this.die();
     }
+  }
+
+  private die(): void {
+    this.target.addExperience(1);
+    this.destroy();
   }
 
   public tryDealDamage(player: Player, time: number): void {

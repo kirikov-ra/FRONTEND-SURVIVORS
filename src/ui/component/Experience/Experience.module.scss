@@ -18,6 +18,8 @@
         background: #1b1927;
         position: relative;
         padding: 2px;
+        overflow: hidden;
+
 
         &::after {
             content: "";
