@@ -3,11 +3,13 @@ import type { MovementKeys } from "../../types/Input";
 
 type PlayerAnim = "player-idle" | "player-walk" | "player-hit" | "player-roll";
 
-export type RollState = {
+type RollState = {
   current: number;
   max: number;
   progress: number; // 0..1
 };
+
+const HALO_OFFSET_Y = -46;
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     public hp: number;
@@ -17,6 +19,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     private isHit = false;
     private hitCooldownMs = 300;
     private hitTimer?: Phaser.Time.TimerEvent;
+    private halo: Phaser.GameObjects.Sprite;
 
     // roll config
     private readonly ROLL_SPEED = 350;
@@ -67,16 +70,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     private updateAnimation() {
-      if (this.isHit) return;
+        if (this.isHit) return;
 
-      const body = this.bodyArcade;
+        const body = this.bodyArcade;
 
-      if (body.velocity.lengthSq() > 0) {
-        this.flipX = body.velocity.x < 0;
-        this.playAnimation("player-walk");
-      } else {
-        this.playAnimation("player-idle");
-      }
+        if (body.velocity.lengthSq() > 0) {
+            const isFlipped = body.velocity.x < 0;
+
+            this.flipX = isFlipped;
+            this.halo.setFlipX(isFlipped); // ← ВОТ ЭТО
+
+            this.playAnimation("player-walk");
+        } else {
+            this.playAnimation("player-idle");
+        }
     }
 
     private tryRoll(time: number): void {
@@ -144,9 +151,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         body.setCollideWorldBounds(true);
         body.setImmovable(false);
         body.setAllowGravity(false);
-
         this.setDisplaySize(25, 72);
-
+        // this.bodyArcade.pushable = false;
         this.hp = 100;
         this.maxHp = 100;
 
@@ -160,6 +166,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.spaceKey = scene.input.keyboard!.addKey(
             Phaser.Input.Keyboard.KeyCodes.SPACE
         );
+
+        // === НИМБ ===
+        this.halo = scene.add.sprite(x, y + HALO_OFFSET_Y, "ts_halo");
+        this.halo.setVisible(false);
+        this.halo.setDepth(this.depth + 1);
     }
 
     public setHpChangeCallback(cb: (hp: number) => void): void {
@@ -195,25 +206,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
 
     public takeDamage(amount: number): void {
-        if (this.isHit) return;
-
+        // Убираем блокировку isHit для урона — теперь игрок всегда получает урон
         this.hp = Math.max(0, this.hp - amount);
         this.onHpChange?.(this.hp);
 
-        this.isHit = true;
+        // Анимация хита все еще срабатывает, но не блокирует урон
         this.playAnimation("player-hit");
 
-        this.hitTimer?.remove(false);
+        // Можно оставить isHit для визуальной "мерцалки" или эффекта
+        this.isHit = true;
 
-        this.hitTimer = this.scene.time.delayedCall(
-            this.hitCooldownMs,
-            () => {
+        // Быстрый сброс визуального эффекта, но урон уже можно получать
+        this.scene.time.delayedCall(100, () => {
             this.isHit = false;
-            },
-            undefined,
-            this
-        );
+        });
     }
+
 
     update(time: number): void {
         if (!this.isRolling) {
@@ -233,6 +241,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.updateRollRecharge(time);
 
+        // синхронизация нимба
+        this.halo.setPosition(this.x, this.y + HALO_OFFSET_Y);
+    }
+
+    enableHalo(): void {
+        this.halo.setVisible(true);
+    }
+
+    disableHalo(): void {
+        this.halo.setVisible(false);
+    }
+
+    destroy(fromScene?: boolean): void {
+        this.halo.destroy();
+        super.destroy(fromScene);
     }
 
 }

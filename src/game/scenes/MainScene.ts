@@ -5,27 +5,36 @@ import { ProjectileSystem } from "../systems/ProjectileSystem";
 import { createPlayerAnimations } from "../animations/playerAnimations";
 import { createEnemyAnimations } from "../animations/enemyAnimations";
 import type { TextureKey } from "../../types/TextureKey";
+import { gameEvents, GAME_EVENTS } from "../events/gameEvents";
 
 export class MainScene extends Phaser.Scene {
-  public player!: Player;
-  private enemies!: Phaser.Physics.Arcade.Group;
-  private projectileSystem!: ProjectileSystem;
-
+    public player!: Player;
+    private enemies!: Phaser.Physics.Arcade.Group;
+    private projectileSystem!: ProjectileSystem;
+    private escKey!: Phaser.Input.Keyboard.Key;
   //  Карта
-  private readonly MAP_WIDTH = 2000;
-  private readonly MAP_HEIGHT = 2000;
+    private readonly MAP_WIDTH = 2000;
+    private readonly MAP_HEIGHT = 2000;
 
-  constructor() {
-    super("MainScene");
-  }
+    constructor() {
+        super("MainScene");
+    }
 
   /** Загружаем текстуры */
   preload(): void {
-    this.load.image("html" satisfies TextureKey, "assets/html.png");
+    this.load.image("floor" satisfies TextureKey, "assets/floor.png");
+    this.load.image("wall_front" satisfies TextureKey, "assets/wall_front.png");
+    this.load.image("wall_side" satisfies TextureKey, "assets/wall_side.png");
+    this.load.image("wall_bottom" satisfies TextureKey, "assets/wall_bottom.png");
   }
 
   /** Создание сцены */
   create(): void {
+    // pause
+    this.escKey = this.input.keyboard!.addKey(
+        Phaser.Input.Keyboard.KeyCodes.ESC
+    );
+    gameEvents.on(GAME_EVENTS.TOGGLE_PAUSE, this.togglePause, this);
     // ========================================================
     // ПОЛ
     // ========================================================
@@ -85,7 +94,9 @@ export class MainScene extends Phaser.Scene {
     bottomWall.setDepth(4);
     this.physics.add.existing(bottomWall, true);
     const bottomBody = bottomWall.body as Phaser.Physics.Arcade.StaticBody;
-    bottomBody.setSize(this.MAP_WIDTH, -14);
+    bottomBody.setSize(this.MAP_WIDTH, 14);
+    bottomBody.setOffset(0, 0);
+    
 
     const leftWall = this.add.tileSprite(14 / 2, this.MAP_HEIGHT / 2, 14, this.MAP_HEIGHT, "wall_side");
     leftWall.setDepth(3);
@@ -122,7 +133,8 @@ export class MainScene extends Phaser.Scene {
       }
     });
 
-    this.physics.add.collider(this.enemies, this.enemies);
+    // this.physics.add.collider(this.enemies, this.enemies);
+    
 
     // ========================================================
     // СПАВН ВРАГОВ
@@ -136,10 +148,50 @@ export class MainScene extends Phaser.Scene {
   }
 
   /** Обновление сцены */
-  update(time: number): void {
-    this.player.update(time);
-    this.projectileSystem.update(time);
-  }
+    update(time: number): void {
+        if (Phaser.Input.Keyboard.JustDown(this.escKey)) {
+            this.pauseGame();
+        }
+
+        this.player.update(time);
+        this.projectileSystem.update(time);
+        this.player.enableHalo();
+
+        const enemies = this.enemies.getChildren() as Enemy[];
+
+        
+        // СЕПАРАЦИЯ врагов
+        for (const enemy of enemies) {
+            enemy.applySeparation(enemies);
+        }
+
+        const player = this.player;
+        gameEvents.emit(GAME_EVENTS.PLAYER_POSITION, {
+            x: player.x,
+            y: player.y,
+            worldWidth: this.physics.world.bounds.width,
+            worldHeight: this.physics.world.bounds.height,
+        });
+    }
+
+    private pauseGame() {
+        this.scene.launch("PauseScene");
+        this.scene.pause();
+    }
+
+    private togglePause() {
+        if (this.scene.isPaused()) {
+            this.scene.resume("MainScene");
+            this.scene.stop("PauseScene");
+        } else {
+            this.scene.launch("PauseScene");
+            this.scene.pause();
+        }
+    }
+
+    shutdown() {
+        gameEvents.off(GAME_EVENTS.TOGGLE_PAUSE, this.togglePause, this);
+    }
 
   /** Спавн врага с случайной стороны карты */
   private spawnEnemy(): void {

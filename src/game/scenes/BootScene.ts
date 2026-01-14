@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import type { TextureKey } from "../../types/TextureKey";
 
 export class BootScene extends Phaser.Scene {
     constructor() {
@@ -26,10 +27,9 @@ export class BootScene extends Phaser.Scene {
                 frameWidth: 22,
                 frameHeight: 44,
             });
-        this.load.image("floor", "assets/floor.png");
-        this.load.image("wall_front", "assets/wall_front.png");
-        this.load.image("wall_side", "assets/wall_side.png");
-        this.load.image("wall_bottom", "assets/wall_bottom.png");
+
+        this.load.image("html" satisfies TextureKey, "assets/html.png");
+        this.load.image("ts_halo" satisfies TextureKey, "assets/TS_srite.png");
     }   
 
 

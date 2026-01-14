@@ -3,5 +3,7 @@ export type TextureKey =
   | "enemy_sprite_sheet"
   | "wall_front"
   | "wall_side"
+  | "wall_bottom"
   | "floor"
-  | "html";
+  | "html"
+  | "ts_halo";

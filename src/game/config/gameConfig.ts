@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { BootScene } from "../scenes/BootScene";
 import { MainScene } from "../scenes/MainScene";
+import { PauseScene } from "../scenes/PauseScene";
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -21,6 +22,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
 
-  scene: [BootScene, MainScene],
+  scene: [BootScene, MainScene, PauseScene],
 };
 
+// export const game = new Phaser.Game(gameConfig);

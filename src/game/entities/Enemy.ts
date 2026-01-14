@@ -32,10 +32,27 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.play(key);
   }
 
-  update(): void {
-    this.scene.physics.moveToObject(this, this.target, this.speed);
-    this.playAnimation("enemy-walk");
+  private die(): void {
+    this.target.addExperience(1);
+    this.destroy();
   }
+
+  update(): void {
+  const body = this.bodyArcade;
+
+  const dx = this.target.x - this.x;
+  const dy = this.target.y - this.y;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist === 0) return;
+
+  body.velocity.x += (dx / dist) * 6;
+  body.velocity.y += (dy / dist) * 6;
+
+  body.velocity.limit(this.speed);
+
+  this.playAnimation("enemy-walk");
+}
 
   public takeDamage(amount: number): void {
     this.hp -= amount;
@@ -44,15 +61,40 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private die(): void {
-    this.target.addExperience(1);
-    this.destroy();
-  }
-
   public tryDealDamage(player: Player, time: number): void {
     if (time < this.lastDamageTime + this.damageCooldown) return;
 
     this.lastDamageTime = time;
     player.takeDamage(1);
   }
+
+  public applySeparation(enemies: Enemy[]): void {
+  const radius = 28;
+  const force = 40;
+  // const force = 120;
+  
+
+  let pushX = 0;
+  let pushY = 0;
+
+  for (const other of enemies) {
+    if (other === this) continue;
+
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq === 0 || distSq > radius * radius) continue;
+
+    const dist = Math.sqrt(distSq);
+    const strength = (radius - dist) / radius;
+
+    pushX += (dx / dist) * strength;
+    pushY += (dy / dist) * strength;
+  }
+
+  this.bodyArcade.velocity.x += pushX * force;
+  this.bodyArcade.velocity.y += pushY * force;
+}
+
 }

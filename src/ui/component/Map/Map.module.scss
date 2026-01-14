@@ -78,7 +78,7 @@
             height: calc(100% - 14px);
             box-shadow: 2px 2px 0 0px #090c13 inset;
             position: relative;
-        
+
             &::after {
                 content: "";
                 position: absolute;
@@ -88,6 +88,12 @@
                 height: calc(100% - 2px);
                 box-shadow: -2px -2px 0 0px #313d4b inset;
             }
+
+            >div {
+                height: 128px;
+                width: 128px;
+                position: relative;
+            }
         }
     }
 
@@ -96,9 +102,7 @@
         width: 4px;
         height: 4px;
         background-color: #00ff00;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%); // точка по центру координаты
+        // transform: translate(-50%, -50%); // точка по центру координаты
     }
 }
 
