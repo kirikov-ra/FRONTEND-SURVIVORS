@@ -27,8 +27,11 @@ export class BootScene extends Phaser.Scene {
                 frameWidth: 22,
                 frameHeight: 44,
             });
-
         this.load.image("html" satisfies TextureKey, "assets/html.png");
+        this.load.spritesheet("trail_fire", "assets/CSS_trail.png", {
+            frameWidth: 22,
+            frameHeight: 28
+        });
         this.load.image("ts_halo" satisfies TextureKey, "assets/TS_srite.png");
     }   
 

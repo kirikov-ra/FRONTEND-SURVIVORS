@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { MovementKeys } from "../../types/Input";
+import { Trail } from "../systems/CssTrailSkill";
 
 type PlayerAnim = "player-idle" | "player-walk" | "player-hit" | "player-roll";
 
@@ -25,10 +26,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     private readonly ROLL_SPEED = 350;
     private readonly ROLL_DURATION = 300;
     private readonly ROLL_COOLDOWN = 400;
-    private readonly MAX_ROLL_CHARGES = 3;
+    private readonly MAX_ROLL_CHARGES = 99;
     private readonly ROLL_RECHARGE_TIME = 30000;
 
     // state
+    private isMoving = false;
     private isRolling = false;
     private rollDir = new Phaser.Math.Vector2(1, 0);
 
@@ -48,6 +50,28 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return this.body as Phaser.Physics.Arcade.Body;
     }
 
+    private lastTrailTime = 0;
+    private trailCooldown = 100;
+
+
+    // уровень каждого скилла (по умолчанию 1)
+    private skillLevels: Record<string, number> = {
+        CSS: 4,
+        HTML: 1,
+        JS: 1,
+        // добавь другие скиллы
+    };
+
+    // метод для получения уровня скилла
+    public getSkillLevel(skillName: string): number {
+        return this.skillLevels[skillName] ?? 1;
+    }
+
+    // метод для повышения уровня скилла
+    public setSkillLevel(skillName: string, level: number) {
+        this.skillLevels[skillName] = level;
+    }
+
     private playAnimation(key: PlayerAnim) {
       if (this.anims.currentAnim?.key === key) return;
       this.play(key);
@@ -63,6 +87,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         if (this.keys.D.isDown) body.setVelocityX(this.speed);
 
         body.velocity.normalize().scale(this.speed);
+
+        this.isMoving = body.velocity.lengthSq() > 0;
 
         if (body.velocity.lengthSq() > 0) {
             this.rollDir.copy(body.velocity).normalize();
@@ -138,6 +164,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         );
     }
 
+    private spawnCssTrail(time: number) {
+        if (time < this.lastTrailTime + this.trailCooldown) return;
+        this.lastTrailTime = time;
+
+        new Trail({
+            scene: this.scene,
+            x: this.x,
+            y: this.y + 2,
+            radius: 22,
+            duration: 2000,
+            dotDamage: 20,
+            dotInterval: 200,
+        });
+    }
+
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "player_asset_sheet", 0);
@@ -155,6 +196,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         // this.bodyArcade.pushable = false;
         this.hp = 100;
         this.maxHp = 100;
+        this.setDepth(100);
+
 
         this.keys = scene.input.keyboard!.addKeys({
             W: Phaser.Input.Keyboard.KeyCodes.W,
@@ -204,6 +247,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     //     return this.speed;
     // }
 
+    public isInMotion(): boolean {
+        const body = this.body as Phaser.Physics.Arcade.Body;
+        return body.velocity.lengthSq() > 10;
+    }
+
 
     public takeDamage(amount: number): void {
         // Убираем блокировку isHit для урона — теперь игрок всегда получает урон
@@ -240,6 +288,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         });
 
         this.updateRollRecharge(time);
+
+        if (this.isInMotion()) {
+            this.spawnCssTrail(time);
+        }
 
         // синхронизация нимба
         this.halo.setPosition(this.x, this.y + HALO_OFFSET_Y);

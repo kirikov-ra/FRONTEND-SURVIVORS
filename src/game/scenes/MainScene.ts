@@ -53,7 +53,6 @@ export class MainScene extends Phaser.Scene {
     createPlayerAnimations(this.anims);
 
     this.player = new Player(this, this.MAP_WIDTH / 2, this.MAP_HEIGHT / 2);
-    this.player.setDepth(2);
 
     // Колбэк изменения состояния кувырка
     this.player.setRollStateChangeCallback((state): void => {
@@ -80,6 +79,7 @@ export class MainScene extends Phaser.Scene {
     // ========================================================
     this.cameras.main.setBounds(0, 0, this.MAP_WIDTH, this.MAP_HEIGHT);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    this.cameras.main.setZoom(1.0);
 
     // ========================================================
     // СТЕНЫ
@@ -91,7 +91,7 @@ export class MainScene extends Phaser.Scene {
     topBody.setSize(this.MAP_WIDTH, 80 - 74);
 
     const bottomWall = this.add.tileSprite(this.MAP_WIDTH / 2, this.MAP_HEIGHT - 7, this.MAP_WIDTH, 14, "wall_bottom");
-    bottomWall.setDepth(4);
+    bottomWall.setDepth(101);
     this.physics.add.existing(bottomWall, true);
     const bottomBody = bottomWall.body as Phaser.Physics.Arcade.StaticBody;
     bottomBody.setSize(this.MAP_WIDTH, 14);
@@ -119,6 +119,13 @@ export class MainScene extends Phaser.Scene {
 
     this.projectileSystem = new ProjectileSystem(this, this.player, this.enemies);
 
+    this.anims.create({
+        key: "trail_fire_anim",
+        frames: this.anims.generateFrameNumbers("trail_fire", { start: 0, end: 3 }),
+        frameRate: 12,
+        repeat: -1
+    });
+
     // ========================================================
     // КОЛЛИЗИИ
     // ========================================================
@@ -140,7 +147,7 @@ export class MainScene extends Phaser.Scene {
     // СПАВН ВРАГОВ
     // ========================================================
     this.time.addEvent({
-      delay: 500,
+      delay: 300,
       loop: true,
       callback: this.spawnEnemy,
       callbackScope: this,
@@ -172,6 +179,7 @@ export class MainScene extends Phaser.Scene {
             worldWidth: this.physics.world.bounds.width,
             worldHeight: this.physics.world.bounds.height,
         });
+
     }
 
     private pauseGame() {
@@ -195,7 +203,7 @@ export class MainScene extends Phaser.Scene {
 
   /** Спавн врага с случайной стороны карты */
   private spawnEnemy(): void {
-    if (this.enemies.countActive(true) >= 40) return;
+    if (this.enemies.countActive(true) >= 100) return;
 
     const side = Phaser.Math.Between(0, 3);
     const w = this.scale.width;
