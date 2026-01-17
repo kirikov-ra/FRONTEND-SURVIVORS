@@ -11,7 +11,7 @@ export class BootScene extends Phaser.Scene {
             "player_asset_sheet",
             "assets/player_asset_sheet.png",
             {
-                frameWidth: 22,
+                frameWidth: 32,
                 frameHeight: 64,
             }
         );
@@ -33,6 +33,8 @@ export class BootScene extends Phaser.Scene {
             frameHeight: 28
         });
         this.load.image("ts_halo" satisfies TextureKey, "assets/TS_srite.png");
+        this.load.image("coin", "assets/coin.png");
+        this.load.image("HTML_bullet", "assets/HTML_bullet.png");
     }   
 
 

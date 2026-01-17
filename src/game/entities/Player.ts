@@ -25,7 +25,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // roll config
     private readonly ROLL_SPEED = 350;
     private readonly ROLL_DURATION = 300;
-    private readonly ROLL_COOLDOWN = 400;
+    private readonly ROLL_COOLDOWN = 500;
     private readonly MAX_ROLL_CHARGES = 99;
     private readonly ROLL_RECHARGE_TIME = 30000;
 
@@ -56,8 +56,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // уровень каждого скилла (по умолчанию 1)
     private skillLevels: Record<string, number> = {
-        CSS: 4,
-        HTML: 1,
+        CSS: 1,
+        HTML: 4,
         JS: 1,
         // добавь другие скиллы
     };
@@ -104,7 +104,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             const isFlipped = body.velocity.x < 0;
 
             this.flipX = isFlipped;
-            this.halo.setFlipX(isFlipped); // ← ВОТ ЭТО
+            this.halo.setFlipX(isFlipped);
 
             this.playAnimation("player-walk");
         } else {
@@ -114,12 +114,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     private tryRoll(time: number): void {
         if (this.isRolling) return;
-        if (this.rollCharges <= 0) return;
+        // if (this.rollCharges <= 0) return;
         if (time < this.lastRollTime + this.ROLL_COOLDOWN) return;
         if (this.rollDir.lengthSq() === 0) return;
 
         this.isRolling = true;
-        this.rollCharges--;
+        // this.rollCharges--;
         this.lastRollTime = time;
 
         const body = this.bodyArcade;
@@ -137,32 +137,57 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         });
     }
 
-    private updateRollRecharge(time: number): void {
-        if (this.rollCharges >= this.MAX_ROLL_CHARGES) return;
+    // private tryRoll(time: number): void {
+    //     if (this.isRolling) return;
+    //     if (this.rollCharges <= 0) return;
+    //     if (time < this.lastRollTime + this.ROLL_COOLDOWN) return;
+    //     if (this.rollDir.lengthSq() === 0) return;
 
-        if (this.lastChargeTime === 0) {
-            this.lastChargeTime = time;
-        }
+    //     this.isRolling = true;
+    //     this.rollCharges--;
+    //     this.lastRollTime = time;
 
-        const progress =
-            (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME;
+    //     const body = this.bodyArcade;
 
-        if (progress >= 1) {
-            this.rollCharges++;
-            this.lastChargeTime = 0;
-        }
-    }
+    //     body.setVelocity(
+    //         this.rollDir.x * this.ROLL_SPEED,
+    //         this.rollDir.y * this.ROLL_SPEED
+    //     );
 
-    private getRollProgress(time: number): number {
-        if (this.rollCharges >= this.MAX_ROLL_CHARGES) return 0;
-        if (this.lastChargeTime === 0) return 0;
+    //     this.play("player-roll", true);
 
-        return Phaser.Math.Clamp(
-            (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME,
-            0,
-            1
-        );
-    }
+    //     this.scene.time.delayedCall(this.ROLL_DURATION, () => {
+    //         this.isRolling = false;
+    //         body.setVelocity(0);
+    //     });
+    // }
+
+    // private updateRollRecharge(time: number): void {
+    //     if (this.rollCharges >= this.MAX_ROLL_CHARGES) return;
+
+    //     if (this.lastChargeTime === 0) {
+    //         this.lastChargeTime = time;
+    //     }
+
+    //     const progress =
+    //         (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME;
+
+    //     if (progress >= 1) {
+    //         this.rollCharges++;
+    //         this.lastChargeTime = 0;
+    //     }
+    // }
+
+    // private getRollProgress(time: number): number {
+    //     if (this.rollCharges >= this.MAX_ROLL_CHARGES) return 0;
+    //     if (this.lastChargeTime === 0) return 0;
+
+    //     return Phaser.Math.Clamp(
+    //         (time - this.lastChargeTime) / this.ROLL_RECHARGE_TIME,
+    //         0,
+    //         1
+    //     );
+    // }
 
     private spawnCssTrail(time: number) {
         if (time < this.lastTrailTime + this.trailCooldown) return;
@@ -187,12 +212,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
 
         const body = this.bodyArcade;
-        body.setSize(19, 28);
-        body.setOffset(2, 4);
+        body.setSize(16, 25);
+        body.setOffset(8, 5);
         body.setCollideWorldBounds(true);
         body.setImmovable(false);
         body.setAllowGravity(false);
-        this.setDisplaySize(25, 72);
+        this.setDisplaySize(32, 64);
         // this.bodyArcade.pushable = false;
         this.hp = 100;
         this.maxHp = 100;
@@ -281,13 +306,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.tryRoll(time);
         }
 
-        this.onRollStateChange?.({
-            current: this.rollCharges,
-            max: this.MAX_ROLL_CHARGES,
-            progress: this.getRollProgress(time),
-        });
+        // this.onRollStateChange?.({
+        //     current: this.rollCharges,
+        //     max: this.MAX_ROLL_CHARGES,
+        //     progress: this.getRollProgress(time),
+        // });
 
-        this.updateRollRecharge(time);
+        // this.updateRollRecharge(time);
 
         if (this.isInMotion()) {
             this.spawnCssTrail(time);

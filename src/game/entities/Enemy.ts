@@ -1,13 +1,21 @@
 import Phaser from "phaser";
 import { Player } from "./Player";
+// import { GAME_EVENTS, gameEvents } from "../events/gameEvents";
+import { Coin } from "./Coin";
 
 type EnemyAnim = "enemy-walk" | "enemy-hit";
 
-export type DamageSource =
+type DamageSource =
   | "projectile"
   | "trail"
   | "contact"
   | "other";
+
+  type DropConfig = {
+    chance: number;      // 0..1
+    minGold: number;
+    maxGold: number;
+};
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
     private speed = 150;
@@ -23,6 +31,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     private get bodyArcade(): Phaser.Physics.Arcade.Body {
         return this.body as Phaser.Physics.Arcade.Body;
     }
+
+    private dropConfig: DropConfig = {
+        chance: 0.6,     // 60% шанс
+        minGold: 1,
+        maxGold: 3,
+    };
 
     constructor(scene: Phaser.Scene, x: number, y: number, target: Player) {
         super(scene, x, y, "enemy_sprite_sheet");
@@ -64,10 +78,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         switch (source) {
             case "projectile":
             case "contact":
+                
                 this.playHitAnimation();
                 break;
 
             case "trail":
+
                 this.playTrailFeedback();
                 break;
         }
@@ -81,7 +97,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.playAnimation("enemy-hit");
 
         // Даем анимации гарантированно отыграть
-        this.scene.time.delayedCall(150, () => {
+        this.scene.time.delayedCall(100, () => {
             if (!this.active) return;
             this.isHit = false;
         });
@@ -107,7 +123,38 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // -------------------------
     private die(): void {
         this.target.addExperience(1);
-        this.destroy();
+
+        // -----------------
+        // Спавн монеты
+        // -----------------
+        this.tryDropLoot();
+
+        this.disableBody(true, true);
+
+        this.scene.time.delayedCall(0, () => {
+            this.destroy();
+        });
+    }
+
+    private tryDropLoot(): void {
+        if (!this.scene) return;
+
+        // шанс дропа
+        if (Math.random() > this.dropConfig.chance) return;
+
+        const gold = Phaser.Math.Between(
+            this.dropConfig.minGold,
+            this.dropConfig.maxGold
+        );
+
+        if (gold <= 0) return;
+
+        const mainScene = this.scene as any;
+        if (!mainScene.coins) return;
+
+        mainScene.coins.add(
+            new Coin(this.scene, this.x, this.y, gold)
+        );
     }
 
     update(): void {
@@ -134,13 +181,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.hp -= amount;
 
+        this.handleHitFeedback(source);
+
         if (this.hp <= 0) {
             this.isDead = true;
-            this.die();
+            
+             this.scene.time.delayedCall(80, () => {
+                if (!this.active) return;
+                this.die();
+            });
+
             return;
         }
-
-        this.handleHitFeedback(source);
     }
 
     public tryDealDamage(player: Player, time: number): void {

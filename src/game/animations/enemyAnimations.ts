@@ -13,7 +13,7 @@ export function createEnemyAnimations(anims: Phaser.Animations.AnimationManager)
   anims.create({
     key: "enemy-hit",
     frames: anims.generateFrameNumbers("enemy_sprite_sheet", { start: 4, end: 4 }),
-    frameRate: 6,
+    frameRate: 12,
     repeat: 0,
   });
 }

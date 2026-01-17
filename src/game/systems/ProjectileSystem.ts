@@ -77,9 +77,9 @@ export class ProjectileSystem {
 
     // если уже попал в этого врага, пропускаем
     if (projectile.hasHit(enemy)) return;
-
+    
     // наносим урон
-    enemy.takeDamage(projectile.damage * projectile.damageMultiplier, "projectile");
+    enemy.takeDamage((projectile.damage * projectile.damageMultiplier), "projectile");
 
     // помечаем врага как поражённого
     projectile.markHit(enemy);

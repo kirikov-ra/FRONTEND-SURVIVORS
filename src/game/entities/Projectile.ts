@@ -12,7 +12,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   private hitEnemies = new Set<Phaser.GameObjects.GameObject>();
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, "html");
+    super(scene, x, y, "HTML_bullet");
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -22,7 +22,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
     // фиксированный хитбокс
     const size = 14;
-    this.setDisplaySize(size, size);
+    this.setDisplaySize(size * 2, size * 2);
     body.setSize(size, size);
     body.setOffset((this.width - size) / 2, (this.height - size) / 2);
   }
