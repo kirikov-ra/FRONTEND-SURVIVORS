@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { Player } from "./Player";
 // import { GAME_EVENTS, gameEvents } from "../events/gameEvents";
 import { Coin } from "./Coin";
+import type { LootScene } from "../../types/LootScene";
 
 type EnemyAnim = "enemy-walk" | "enemy-hit";
 
@@ -149,7 +150,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         if (gold <= 0) return;
 
-        const mainScene = this.scene as any;
+        const mainScene = this.scene as LootScene;
         if (!mainScene.coins) return;
 
         mainScene.coins.add(

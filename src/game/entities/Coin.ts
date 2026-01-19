@@ -40,7 +40,7 @@ export class Coin extends Phaser.Physics.Arcade.Sprite {
     }
 
     public collect() {
-        gameEvents.emit(GAME_EVENTS.CURRENCY_ADD + ":updated", { gold: this.value });
+        gameEvents.emit(GAME_EVENTS.CURRENCY_UPDATED, { gold: this.value });
         this.disableBody(true, true);
         this.destroy();
     }

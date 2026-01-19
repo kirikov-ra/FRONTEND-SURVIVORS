@@ -24,8 +24,10 @@ export class Trail extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
         this.play("trail_fire_anim");
         this.setDepth(1);
-        this.setScale(radius / 20); // подгоняем под радиус (16 — половина кадра)
-        this.setOrigin(0.5, 1);
+
+        // Весь спрайт виден
+        this.setScale(radius / 20);
+        this.setOrigin(0.5, 1); // низ спрайта на координатах (x, y)
 
         this.duration = duration;
         this.dotDamage = dotDamage;
