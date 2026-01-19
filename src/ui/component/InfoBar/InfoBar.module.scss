@@ -1,8 +1,9 @@
 .container {
     width: 125px;
     height: 125px;
-    background: #313d4b;
-    // box-shadow: 2px 2px 0 2px #313d4b inset;
+    background: #0b223b40;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     padding: 2px;
     clip-path: polygon(
         /* верх-левый */
@@ -12,7 +13,7 @@
         119px 0, 119px 2px, 123px 2px, 123px 6px, 125px 6px,
 
         /* низ-правый */
-        125px 119px, 123px 119px, 123px 123px, 119px 123px, 119px 125px,
+        125px 125px, 125px 125px, 125px 125px, 125px 125px, 125px 125px,
 
         /* низ-левый */
         6px 125px, 6px 123px, 2px 123px, 2px 119px, 0 119px);
@@ -21,7 +22,9 @@
             width: 121px;
             height: 121px;
             position: relative;
-            background: #171d29;
+            background: #171d2940;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             clip-path: polygon(
                     /* верх-левый */
                     0 6px,

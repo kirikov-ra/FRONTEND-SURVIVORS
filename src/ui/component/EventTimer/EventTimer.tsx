@@ -1,39 +1,32 @@
 import { useEffect, useState } from "react";
 import styles from './EventTimer.module.scss'
-
-type CountdownProps = {
-  seconds: number;
-  onFinish?: () => void;
-};
+import { GAME_EVENTS, gameEvents } from "../../../game/events/gameEvents";
 
 
-export const EventTimer = ({ seconds, onFinish }: CountdownProps) => {
-    const [timeLeft, setTimeLeft] = useState(seconds);
+export const EventTimer = () => {
+    const [time, setTime] = useState({ minutes: 5, seconds: 0 });
 
     useEffect(() => {
-        if (timeLeft <= 0) {
-        onFinish?.();
-        return;
-        }
+        const handler = (t: { minutes: number; seconds: number }) => {
+            setTime(t);
+        };
 
-        const timer = setInterval(() => {
-        setTimeLeft((t) => t - 1);
-        }, 1000);
+        gameEvents.on(GAME_EVENTS.TIMER_TICK, handler);
 
-        return () => clearInterval(timer);
-    }, [timeLeft, onFinish]);
-
-    const minutes = Math.floor(timeLeft / 60)
-        .toString()
-        .padStart(2, "0");
-
-    const secs = (timeLeft % 60).toString().padStart(2, "0");
+        return () => {
+            gameEvents.off(GAME_EVENTS.TIMER_TICK, handler);
+        };
+    }, []);
 
 
     return (
         <div className={styles.container}>
             <div className={styles.timer}>
-                <p>{minutes}:{secs}</p>
+                <p>
+                    {String(time.minutes).padStart(2, '0')}
+                    :
+                    {String(time.seconds).padStart(2, '0')}
+                </p>
             </div>
         </div>
     )

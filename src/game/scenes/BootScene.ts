@@ -35,6 +35,25 @@ export class BootScene extends Phaser.Scene {
         this.load.image("ts_halo" satisfies TextureKey, "assets/TS_srite.png");
         this.load.image("coin", "assets/coin.png");
         this.load.image("HTML_bullet", "assets/HTML_bullet.png");
+        this.load.spritesheet("Angular_pentagram", "assets/Angular_pentagram.png", {
+                frameWidth: 707,
+                frameHeight: 707,
+            });
+        this.load.spritesheet("angular_pentagram_spawn", "assets/angular_pentagram_spawn.png", 
+            {
+                frameWidth: 352,
+                frameHeight: 355,
+            });
+        this.load.spritesheet("angular_pentagram_idle", "assets/angular_pentagram_spawn.png", 
+            {
+                frameWidth: 352,
+                frameHeight: 355,
+            });
+        this.load.spritesheet("angular_pentagram_explode", "assets/angular_pentagram_spawn.png", 
+            {
+                frameWidth: 352,
+                frameHeight: 355,
+            });
     }   
 
 

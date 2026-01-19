@@ -2,7 +2,9 @@
     width: 100px;
     height: 60px;
     padding: 2px;
-    background: #313d4b;
+    background: #0b223b40;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     clip-path: polygon(
                 /* верх-левый */
                 0 6px,
@@ -35,7 +37,9 @@
     .shop {
         width: 96px;
         height: 56px;
-        background: #171d29;
+        background: #171d2940;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         display: flex;
         justify-content: center;
         align-items: center;

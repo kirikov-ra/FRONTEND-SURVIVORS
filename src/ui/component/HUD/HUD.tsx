@@ -22,7 +22,7 @@ export const HUD = () => {
                     <SettingButton />
                     <FullscreenButton />
                 </div>
-                <EventTimer seconds={300} />
+                <EventTimer />
             </div>
             <div className={styles.bottom}>
                 <Map />

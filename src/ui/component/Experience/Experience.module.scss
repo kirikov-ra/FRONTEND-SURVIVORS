@@ -15,7 +15,7 @@
     .scale_container {
         width: 100%;
         height: inherit;
-        background: #1b1927;
+        background: #1b192780;
         position: relative;
         padding: 2px;
         overflow: hidden;
@@ -28,7 +28,7 @@
             right: 0;
             width: calc(100% - 2px);
             height: calc(100% - 2px);
-            box-shadow: -2px -2px 0 0px #3a4273 inset;
+            box-shadow: -2px -2px 0 0px #3a427340 inset;
         }
 
         .scale {

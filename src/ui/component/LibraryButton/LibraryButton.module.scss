@@ -3,7 +3,9 @@
     height: 30px;
     color: white;
     cursor: pointer;
-    background: #313d4b;
+    background: #0b223b40;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     padding: 2px;
     clip-path: polygon(
             /* верх-левый */
@@ -23,7 +25,9 @@
         width: 26px;
         height: 26px;
         position: relative;
-        background: #171d29;
+        background: #171d2940;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         clip-path: polygon(
                 /* верх-левый */
                 0 6px, 2px 6px, 2px 2px, 6px 2px, 6px 0,

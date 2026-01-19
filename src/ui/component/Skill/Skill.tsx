@@ -7,13 +7,13 @@ export const Skill = ({img, name, borderColor, isActive} : {img: string, name: s
         <div className={styles.container}>
             <div 
                 className={styles.border} 
-                style={{ background:  `#${isActive ? borderColor : '313d4b'}` }}
+                style={{ background:  `#${isActive ? borderColor : '313d4b40'}` }}
             >
                 <div className={styles.image_wrapper}>
                     <img 
                         src={img} 
                         alt={name} 
-                        style={{ filter: isActive ? `drop-shadow(0px 0px 10px #${borderColor}` : "none" }}
+                        // style={{ filter: isActive ? `drop-shadow(0px 0px 10px #${borderColor}` : "none" }}
                     />
                 </div>
             </div>

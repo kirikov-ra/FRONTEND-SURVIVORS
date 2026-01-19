@@ -1,0 +1,18 @@
+.container {
+    width: 300px;
+    height: 300px;
+    color: white;
+    cursor: pointer;
+    background: #313d4b;
+    padding: 2px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 500;   
+
+    .button {
+        padding: 10px 20px;
+        background: #171d29;
+    }
+}

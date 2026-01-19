@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import { Player } from "./Player";
 import { GAME_EVENTS, gameEvents } from "../events/gameEvents";
 
 export class Coin extends Phaser.Physics.Arcade.Sprite {
@@ -40,7 +39,7 @@ export class Coin extends Phaser.Physics.Arcade.Sprite {
         });
     }
 
-    public collect(player: Player) {
+    public collect() {
         gameEvents.emit(GAME_EVENTS.CURRENCY_ADD + ":updated", { gold: this.value });
         this.disableBody(true, true);
         this.destroy();

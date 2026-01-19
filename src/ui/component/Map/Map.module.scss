@@ -1,7 +1,9 @@
 .container {
     width: 150px;
     height: 150px;
-    background: #313d4b;
+    background: #0b223b40;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     position: relative;
     display: flex;
     align-items: center;
@@ -39,7 +41,9 @@
     .mapWrapper {
         width: 146px;
         height: 146px;
-        background: #171d29;
+        background: #171d2940;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         position: relative;
         display: flex;
         align-items: center;
@@ -76,8 +80,9 @@
         .map {
             width: calc(100% - 14px);
             height: calc(100% - 14px);
-            box-shadow: 2px 2px 0 0px #090c13 inset;
+            box-shadow: 2px 2px 0 0px #090c1340 inset;
             position: relative;
+            background: #1b192740;
 
             &::after {
                 content: "";
