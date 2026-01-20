@@ -19,24 +19,43 @@ export class Trail extends Phaser.GameObjects.Sprite {
     private lastDotTime = 0;
     private enemies: Phaser.Physics.Arcade.Group;
 
-    constructor({ scene, x, y, radius = 20, duration = 2000, dotDamage = 1, dotInterval = 200 }: TrailConfig) {
-        super(scene, x, y, "trail_fire");
-        scene.add.existing(this);
-        this.play("trail_fire_anim");
-        this.setDepth(1);
+    constructor({
+    scene,
+    x,
+    y,
+    radius = 20,
+    duration = 2000,
+    dotDamage = 1,
+    dotInterval = 200,
+}: TrailConfig) {
+    super(scene, x, y, "trail_fire");
 
-        // Весь спрайт виден
-        this.setScale(radius / 20);
-        this.setOrigin(0.5, 1); // низ спрайта на координатах (x, y)
+    // 1. Добавляем в сцену
+    scene.add.existing(this);
 
-        this.duration = duration;
-        this.dotDamage = dotDamage;
-        this.dotInterval = dotInterval;
+    // 2. Добавляем физику **сразу**
+    scene.physics.add.existing(this, true); // true = static body
 
-        this.enemies = (scene as any).enemies;
+    // 3. Настраиваем тело после добавления physics
+    const body = this.body as Phaser.Physics.Arcade.StaticBody;
+    body.setSize(22, 30);       // хитбокс меньше модели
+    body.setOffset(0, 5);      // подстроить под центр спрайта
 
-        scene.physics.add.existing(this, true);
-    }
+    // 4. Настройка спрайта
+    this.play("trail_fire_anim");
+    this.setDepth(1);
+    this.setScale(radius / 20);
+    this.setOrigin(0.5, 0.6);
+    this.setDisplaySize(22, 55);
+
+    this.duration = duration;
+    this.dotDamage = dotDamage;
+    this.dotInterval = dotInterval;
+
+    // 5. Получаем группу врагов
+    this.enemies = (scene as any).enemies;
+}
+
 
 
 

@@ -4,26 +4,23 @@ import { Settings } from "../Settings/Settings";
 import styles from "./SettingButton.module.scss";
 
 export const SettingButton = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // открытие/закрытие меню и синхронизация паузы
   const toggleMenu = () => {
-    const opening = !isActive;
-    setIsActive(opening);
-
-    // пауза ставится при открытии меню, снимается при закрытии
-    gameEvents.emit(GAME_EVENTS.TOGGLE_PAUSE, opening);
+    const newState = !isOpen;
+    setIsOpen(newState);
+    gameEvents.emit(GAME_EVENTS.MENU_SET, newState);
+    gameEvents.emit(GAME_EVENTS.TOGGLE_PAUSE, newState);
   };
 
-  // подписка на событие ESC
+  // открытие/закрытие через ESC
   useEffect(() => {
-    const handler = () => toggleMenu();
-    gameEvents.on(GAME_EVENTS.TOGGLE_MENU, handler);
-
-    return () => {
-      gameEvents.off(GAME_EVENTS.TOGGLE_MENU, handler);
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") toggleMenu();
     };
-  }, [isActive]);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen]);
 
   return (
     <>
@@ -33,13 +30,7 @@ export const SettingButton = () => {
         </button>
       </div>
 
-      <Settings
-        isActive={isActive}
-        onClose={() => {
-          setIsActive(false);
-          gameEvents.emit(GAME_EVENTS.TOGGLE_PAUSE, false);
-        }}
-      />
+      {isOpen && <Settings onClose={toggleMenu} />}
     </>
   );
 };

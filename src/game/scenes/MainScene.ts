@@ -172,14 +172,29 @@ export class MainScene extends Phaser.Scene {
 
     /** Перезапуск игры */
     private restartGame() {
-        this.scene.stop("PauseScene");
-        this.scene.stop("MainScene");
-        this.scene.start("MainScene");
+        // 1. Гарантированно снимаем паузу
+        if (this.scene.isPaused()) {
+            this.scene.resume();
+        }
+
+        // 2. Закрываем PauseScene, если она есть
+        if (this.scene.isActive("PauseScene")) {
+            this.scene.stop("PauseScene");
+        }
+
+        // 3. Перезапускаем сцену корректно
+        this.scene.restart();
     }
 
     /** Очистка событий при выключении сцены */
     private shutdown() {
         this.gameTimer?.stop(); // останавливаем таймер
+
+        this.time.removeAllEvents();
+        if (this.physics?.world) {
+            this.physics.world.colliders.destroy();
+        }
+
         gameEvents.off(GAME_EVENTS.SPAWN_BOSS, this.spawnBoss, this);
         gameEvents.off(GAME_EVENTS.TOGGLE_PAUSE, this.togglePause, this);
         gameEvents.off(GAME_EVENTS.NEW_GAME, this.restartGame, this);

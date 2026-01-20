@@ -1,18 +1,94 @@
 .container {
-    width: 300px;
-    height: 300px;
-    color: white;
-    cursor: pointer;
-    background: #313d4b;
-    padding: 2px;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 500;   
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 100px;
 
-    .button {
-        padding: 10px 20px;
-        background: #171d29;
+    .menu_background {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        z-index: 1;
+        opacity:1;
+        background-color: black;pointer-events: auto; // ВАЖНО
     }
+
+    .menu {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: center;
+        z-index: 2;
+        background: transparent;
+        pointer-events: none;
+        
+        h1 {
+            font-family: "Press Start 2P", system-ui;
+            color: #7eec7e;
+            font-size: 100px;
+            margin-bottom: 40px;
+        }
+
+        .confirmNewGame {
+            margin-left: 40px;
+        }
+        
+        p {
+            font-family: "Press Start 2P", system-ui;
+            color: #7eec7e;
+            padding: 10px 20px;
+            font-size: 28px;
+            margin-left: 40px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-family: "Press Start 2P", system-ui;
+            color: #7eec7e;
+            font-size: 48px;
+            pointer-events: auto;
+            cursor: pointer;
+            position: relative;
+            margin-left: 40px;
+
+            &::after {
+                content: "";
+                width: 40px;
+                height: 40px;
+                background-color: #7eec7e;
+                position: absolute;
+                left: -40px;
+                top: 0;
+                transform: translate(0, 50%);
+                opacity: 0;
+                transition-duration: .5s;
+            }
+                
+            &:hover::after {
+                opacity: 1;
+            }
+        }
+    }
+
+    .pers_avatar {
+        z-index: 2;
+        width: 50%;
+        height: 100%;
+        display: flex;
+        align-items: end;
+        justify-content: center;pointer-events: none; // КЛЮЧЕВО
+
+        img {
+            object-fit: contain;
+            width: 670px;
+        }
+    }
+
+    
 }
